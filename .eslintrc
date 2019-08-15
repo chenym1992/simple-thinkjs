@@ -1,0 +1,6 @@
+{
+  "extends": "think",
+  "rules": {
+    "quotes": "off"
+  }
+}
