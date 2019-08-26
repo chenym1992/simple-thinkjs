@@ -10,10 +10,10 @@ module.exports = class extends Auth {
     return this.success(insertId);
   }
   async editAction() {
-    const { id, ques } = this.post();
+    const { id, ques, title } = this.post();
     const affectedRows = await this.examModal
       .where({ id })
-      .update({ ques: JSON.stringify(ques) });
+      .update({ ques: JSON.stringify(ques), title });
     return this.success(affectedRows);
   }
   async infoAction() {
@@ -39,10 +39,19 @@ module.exports = class extends Auth {
     const { list } = this.post();
     const params = [];
     list.forEach(v => {
-      params.push({ ques: JSON.stringify(v) });
+      params.push({ ques: JSON.stringify(v), title: v.title || "" });
     });
-    // console.log(params);
     const affectedRows = await this.examModal.addMany(params);
     return this.success(affectedRows);
+  }
+  async queryAction() {
+    const { q } = this.post();
+    const data = await this.examModal
+      .where({ title: ["like", `%${q}%`] })
+      .select();
+    data.forEach(v => {
+      v.ques = JSON.parse(v.ques);
+    });
+    return this.success(data);
   }
 };
